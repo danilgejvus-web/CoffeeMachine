@@ -1,0 +1,15 @@
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\bin\Debug\net8.0\CoffeMachin.exe
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\bin\Debug\net8.0\CoffeMachin.deps.json
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\bin\Debug\net8.0\CoffeMachin.runtimeconfig.json
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\bin\Debug\net8.0\CoffeMachin.dll
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\bin\Debug\net8.0\CoffeMachin.pdb
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\CoffeMachin.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\CoffeMachin.AssemblyInfoInputs.cache
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\CoffeMachin.AssemblyInfo.cs
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\CoffeMachin.csproj.CoreCompileInputs.cache
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\CoffeMachin.dll
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\refint\CoffeMachin.dll
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\CoffeMachin.pdb
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\CoffeMachin.genruntimeconfig.cache
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\ref\CoffeMachin.dll
+C:\Users\fonto\source\repos\CoffeMachin\CoffeMachin\obj\Debug\net8.0\CoffeMachin.sourcelink.json
