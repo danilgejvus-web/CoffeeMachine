@@ -107,7 +107,7 @@ class DrinkService
             "Add"   => new Add(ingredients.ToArray()),
             "Boil"  => new Boil(ingredients.ToArray()),
             "Grind" => new Grind(ingredients.ToArray()),
-            "Mix"   => new Mix(ingredients.ToArray()),
+            "Mix"   => new Mix(ingredients[0], ingredients[1]),
             "Pour"  => new Pour(ingredients.ToArray()),
             "Whisk" => new Whisk(ingredients.ToArray()),
             _       => null
