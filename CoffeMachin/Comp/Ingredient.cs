@@ -1,8 +1,7 @@
 ﻿abstract class Ingredient : IElement
 {
-    public string Name { get; protected set; }
+    public string Name { get; set; }
     public double NetMass { get; set; }
-    public IElement Next { get; set; }
-    protected Ingredient(string name, double mass) { Name = name; NetMass = mass; Next = null; }
+    protected Ingredient(string name, double mass) { Name = name; NetMass = mass; }
     public override string ToString() => $"{Name} ({NetMass}г)";
 }

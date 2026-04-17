@@ -1,52 +1,46 @@
-﻿class Drink
+﻿class Drink : IElement
 {
     public string Name { get; set; }
-    public IElement FirstElement { get; set; }
-    public Drink(string name) { Name = name; FirstElement = null; }
-    public void AddElement(IElement newElement)
+    public Action? First { get; set; }
+
+    public Drink(string name) { Name = name; }
+
+    public void AddAction(Action action)
     {
-        if (FirstElement == null)
-            FirstElement = newElement;
+        if (First == null)
+        {
+            First = action;
+        }
         else
         {
-            IElement current = FirstElement;
-            while (current.Next != null)
-                current = current.Next;
-            current.Next = newElement;
+            Action last = First;
+            while (last.Elements.OfType<Action>().Any())
+                last = last.Elements.OfType<Action>().Last();
+            last.Elements.Add(action);
         }
     }
+
     public void Show()
     {
-        Console.WriteLine($"\nНапиток {Name}:");
-        int index = 1;
-        IElement current = FirstElement;
-        while (current != null)
-        {
-            Console.WriteLine($"  {index++}. {current}");
-            current = current.Next;
-        }
+        Console.WriteLine($"\nНапиток: {Name}");
+        Console.WriteLine("Последовательность действий:");
+        ShowActions(First, 1);
     }
+
+    private void ShowActions(Action? action, int index)
+    {
+        if (action == null) return;
+        Console.WriteLine($"  {index}. {action}");
+        foreach (var elem in action.Elements)
+            if (elem is Action next)
+                ShowActions(next, index + 1);
+    }
+
     public void Cook()
     {
         Console.WriteLine($"\nПриготовление {Name}:");
-        IElement current = FirstElement;
-        while (current != null)
-        {
-            if (current is Action act)
-                act.Execute();
-            current = current.Next;
-        }
-        Console.WriteLine($"{Name} готов!\n");
+        First?.Execute();
+        Console.WriteLine($"\n{Name} готов!");
     }
-    public List<IElement> GetAllElements()
-    {
-        List<IElement> list = new List<IElement>();
-        IElement current = FirstElement;
-        while (current != null)
-        {
-            list.Add(current);
-            current = current.Next;
-        }
-        return list;
-    }
+
 }

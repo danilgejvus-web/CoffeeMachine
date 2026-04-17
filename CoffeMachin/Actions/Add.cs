@@ -1,7 +1,18 @@
 ﻿class Add : Action
 {
-    public Ingredient Ingredient { get; set; }
-    public Add(Ingredient ing) : base("Добавить") { Ingredient = ing; }
-    public override void Execute() => Console.WriteLine($"  Добавлен {Ingredient}");
-    public override string ToString() => $"{Name} -> {Ingredient}";
+    public Add(params Ingredient[] ingredients) : base("Добавить")
+    {
+        Elements.AddRange(ingredients);
+    }
+
+    public override void Execute()
+    {
+        Console.WriteLine(ToString());
+        foreach (var elem in Elements)
+            if (elem is Action act)
+                act.Execute();
+    }
+
+    public override string ToString() =>
+        $"{Name} -> {string.Join(", ", Elements.OfType<Ingredient>())}";
 }

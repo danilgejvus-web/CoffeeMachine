@@ -1,7 +1,9 @@
 ﻿abstract class Action : IElement
 {
     public string Name { get; protected set; }
-    public IElement Next { get; set; }
-    protected Action(string name) { Name = name; Next = null; }
+    public List<IElement> Elements { get; protected set; } = new List<IElement>();
+
+    protected Action(string name) { Name = name; }
+
     public abstract void Execute();
 }

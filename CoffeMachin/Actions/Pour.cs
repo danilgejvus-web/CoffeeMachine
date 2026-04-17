@@ -1,7 +1,22 @@
 ﻿class Pour : Action
 {
-    public Ingredient Ingredient { get; set; }
-    public Pour(Ingredient ing) : base("Пролить") { Ingredient = ing; }
-    public override void Execute() => Console.WriteLine($"  Вода пролита через спрессованный кофе");
-    public override string ToString() => $"{Name} -> {Ingredient}";
+    public Pour(params Ingredient[] ingredients) : base("Пролить")
+    {
+        Elements.AddRange(ingredients);
+    }
+
+    public override void Execute()
+    {
+        Console.WriteLine(ToString());
+        foreach (var elem in Elements)
+            if (elem is Ingredient ing)
+                ing.Name = "Эспрессо";
+        Console.WriteLine($"  => {ToString()}");
+        foreach (var elem in Elements)
+            if (elem is Action act)
+                act.Execute();
+    }
+
+    public override string ToString() =>
+        $"{Name} -> {string.Join(", ", Elements.OfType<Ingredient>())}";
 }

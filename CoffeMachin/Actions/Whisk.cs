@@ -1,7 +1,22 @@
 ﻿class Whisk : Action
 {
-    public Ingredient Ingredient { get; set; }
-    public Whisk(Ingredient ing) : base("Взбить") { Ingredient = ing; }
-    public override void Execute() => Console.WriteLine($"  {Ingredient.Name} взбито в пену");
-    public override string ToString() => $"{Name} -> {Ingredient}";
+    public Whisk(params Ingredient[] ingredients) : base("Взбить")
+    {
+        Elements.AddRange(ingredients);
+    }
+
+    public override void Execute()
+    {
+        Console.WriteLine(ToString());
+        foreach (var elem in Elements)
+            if (elem is Ingredient ing)
+                ing.Name = "Взбитое " + ing.Name;
+        Console.WriteLine($"  => {ToString()}");
+        foreach (var elem in Elements)
+            if (elem is Action act)
+                act.Execute();
+    }
+
+    public override string ToString() =>
+        $"{Name} -> {string.Join(", ", Elements.OfType<Ingredient>())}";
 }

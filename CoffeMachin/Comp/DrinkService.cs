@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 class DrinkService
 {
@@ -14,7 +11,7 @@ class DrinkService
         if (drinks.Count == 0) Console.WriteLine("Нет напитков.");
         else for (int i = 0; i < drinks.Count; i++) Console.WriteLine($"{i + 1}. {drinks[i].Name}");
     }
-    public Drink Get(int idx) => (idx >= 0 && idx < drinks.Count) ? drinks[idx] : null;
+    public Drink? Get(int idx) => (idx >= 0 && idx < drinks.Count) ? drinks[idx] : null;
     public void UpdateName(int idx, string newName)
     {
         if (idx >= 0 && idx < drinks.Count) { drinks[idx].Name = newName; Save(); Console.WriteLine("Название обновлено."); }
@@ -29,10 +26,7 @@ class DrinkService
 
     private void Save()
     {
-        var saveData = new List<DrinkDto>();
-        foreach (var d in drinks)
-            saveData.Add(DrinkToDto(d));
-
+        var saveData = drinks.ConvertAll(DrinkToDto);
         string json = JsonSerializer.Serialize(saveData, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(SaveFile, json);
     }
@@ -45,7 +39,6 @@ class DrinkService
             string json = File.ReadAllText(SaveFile);
             var loaded = JsonSerializer.Deserialize<List<DrinkDto>>(json);
             if (loaded == null) return;
-
             drinks.Clear();
             foreach (var dto in loaded)
                 drinks.Add(DrinkFromDto(dto));
@@ -55,94 +48,77 @@ class DrinkService
 
     private class IngredientDto
     {
-        public string Type { get; set; }
+        public string? Type { get; set; }
         public double NetMass { get; set; }
-        public string Flavor { get; set; }
+        public string? Flavor { get; set; }
     }
 
     private class ActionDto
     {
-        public string Type { get; set; }
-        public IngredientDto Ingredient { get; set; }
-        public IngredientDto Ingredient1 { get; set; }
-        public IngredientDto Ingredient2 { get; set; }
-    }
-
-    private class ElementDto
-    {
-        public string Kind { get; set; }
-        public ActionDto Action { get; set; }
-        public IngredientDto Ingredient { get; set; }
+        public string? Type { get; set; }
+        public List<IngredientDto> Elements { get; set; } = new List<IngredientDto>();
+        public List<ActionDto> Actions { get; set; } = new List<ActionDto>();
     }
 
     private class DrinkDto
     {
-        public string Name { get; set; }
-        public List<ElementDto> Elements { get; set; }
+        public string? Name { get; set; }
+        public List<ActionDto> Actions { get; set; } = new List<ActionDto>();
     }
 
     private DrinkDto DrinkToDto(Drink d)
     {
-        var elements = new List<ElementDto>();
-        var current = d.FirstElement;
-        while (current != null)
+        var dto = new DrinkDto { Name = d.Name };
+        if (d.First != null)
+            dto.Actions.Add(ActionToDto(d.First));
+        return dto;
+    }
+
+    private ActionDto ActionToDto(Action act)
+    {
+        var actDto = new ActionDto { Type = act.GetType().Name };
+        foreach (var elem in act.Elements)
         {
-            if (current is Action act)
-            {
-                var actDto = new ActionDto { Type = act.GetType().Name };
-                if (act is Add a) actDto.Ingredient = IngredientToDto(a.Ingredient);
-                else if (act is Boil b) actDto.Ingredient = IngredientToDto(b.Ingredient);
-                else if (act is Grind g) actDto.Ingredient = IngredientToDto(g.Ingredient);
-                else if (act is Mix m)
-                {
-                    actDto.Ingredient1 = IngredientToDto(m.Ingredient1);
-                    actDto.Ingredient2 = IngredientToDto(m.Ingredient2);
-                }
-                else if (act is Pour p) actDto.Ingredient = IngredientToDto(p.Ingredient);
-                else if (act is Whisk w) actDto.Ingredient = IngredientToDto(w.Ingredient);
-                elements.Add(new ElementDto { Kind = "Action", Action = actDto });
-            }
-            else if (current is Ingredient ing)
-            {
-                elements.Add(new ElementDto { Kind = "Ingredient", Ingredient = IngredientToDto(ing) });
-            }
-            current = current.Next;
+            if (elem is Ingredient ing)
+                actDto.Elements.Add(IngredientToDto(ing));
+            else if (elem is Action nested)
+                actDto.Actions.Add(ActionToDto(nested));
         }
-        return new DrinkDto { Name = d.Name, Elements = elements };
+        return actDto;
     }
 
     private Drink DrinkFromDto(DrinkDto dto)
     {
         Drink d = new Drink(dto.Name);
-        IElement prev = null;
-        foreach (var elemDto in dto.Elements)
-        {
-            IElement elem = null;
-            if (elemDto.Kind == "Action")
-            {
-                var act = elemDto.Action;
-                switch (act.Type)
-                {
-                    case "Add": elem = new Add(IngredientFromDto(act.Ingredient)); break;
-                    case "Boil": elem = new Boil(IngredientFromDto(act.Ingredient)); break;
-                    case "Grind": elem = new Grind(IngredientFromDto(act.Ingredient)); break;
-                    case "Mix": elem = new Mix(IngredientFromDto(act.Ingredient1), IngredientFromDto(act.Ingredient2)); break;
-                    case "Pour": elem = new Pour(IngredientFromDto(act.Ingredient)); break;
-                    case "Whisk": elem = new Whisk(IngredientFromDto(act.Ingredient)); break;
-                }
-            }
-            else if (elemDto.Kind == "Ingredient")
-            {
-                elem = IngredientFromDto(elemDto.Ingredient);
-            }
-            if (elem != null)
-            {
-                if (prev == null) d.FirstElement = elem;
-                else prev.Next = elem;
-                prev = elem;
-            }
-        }
+        if (dto.Actions.Count > 0)
+            d.First = ActionFromDto(dto.Actions[0]);
         return d;
+    }
+
+    private Action? ActionFromDto(ActionDto actDto)
+    {
+        var ingredients = actDto.Elements
+            .Select(IngredientFromDto)
+            .Where(i => i != null)
+            .Cast<Ingredient>()
+            .ToList();
+        Action? act = actDto.Type switch
+        {
+            "Add"   => new Add(ingredients.ToArray()),
+            "Boil"  => new Boil(ingredients.ToArray()),
+            "Grind" => new Grind(ingredients.ToArray()),
+            "Mix"   => new Mix(ingredients.ToArray()),
+            "Pour"  => new Pour(ingredients.ToArray()),
+            "Whisk" => new Whisk(ingredients.ToArray()),
+            _       => null
+        };
+        if (act != null)
+            foreach (var nested in actDto.Actions)
+            {
+                var nestedAct = ActionFromDto(nested);
+                if (nestedAct != null) act.Elements.Add(nestedAct);
+            }
+        return act;
     }
 
     private IngredientDto IngredientToDto(Ingredient ing)
@@ -152,16 +128,13 @@ class DrinkService
         return dto;
     }
 
-    private Ingredient IngredientFromDto(IngredientDto dto)
+    private Ingredient? IngredientFromDto(IngredientDto dto) => dto.Type switch
     {
-        switch (dto.Type)
-        {
-            case "Water": return new Water(dto.NetMass);
-            case "CoffeeBean": return new CoffeeBean(dto.NetMass);
-            case "Ice": return new Ice(dto.NetMass);
-            case "Milk": return new Milk(dto.NetMass);
-            case "Syrup": return new Syrup(dto.NetMass, dto.Flavor);
-            default: return null;
-        }
-    }
+        "Water"      => new Water(dto.NetMass),
+        "CoffeeBean" => new CoffeeBean(dto.NetMass),
+        "Ice"        => new Ice(dto.NetMass),
+        "Milk"       => new Milk(dto.NetMass),
+        "Syrup"      => new Syrup(dto.NetMass, dto.Flavor ?? ""),
+        _            => null
+    };
 }
