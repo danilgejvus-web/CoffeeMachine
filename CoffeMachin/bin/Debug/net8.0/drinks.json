@@ -1,0 +1,59 @@
+[
+  {
+    "Name": "\u0414\u043E\u043F\u043F\u0438\u043E",
+    "Actions": [
+      {
+        "Type": "Add",
+        "Elements": [
+          {
+            "Type": "CoffeeBean",
+            "NetMass": 32,
+            "Flavor": null
+          }
+        ],
+        "Actions": [
+          {
+            "Type": "Pour",
+            "Elements": [
+              {
+                "Type": "CoffeeBean",
+                "NetMass": 32,
+                "Flavor": null
+              }
+            ],
+            "Actions": [
+              {
+                "Type": "Mix",
+                "Elements": [
+                  {
+                    "Type": "Syrup",
+                    "NetMass": 32,
+                    "Flavor": "\u043D\u0435\u0444\u0442\u044C"
+                  },
+                  {
+                    "Type": "Water",
+                    "NetMass": 20,
+                    "Flavor": null
+                  }
+                ],
+                "Actions": [
+                  {
+                    "Type": "Add",
+                    "Elements": [
+                      {
+                        "Type": "Ice",
+                        "NetMass": 20,
+                        "Flavor": null
+                      }
+                    ],
+                    "Actions": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
